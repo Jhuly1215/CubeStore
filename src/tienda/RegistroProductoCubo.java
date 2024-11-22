@@ -46,7 +46,7 @@ public class RegistroProductoCubo extends JPanel {
 	private JTextField txCodigo;
 	private String archivo="Cubos.txt";
 	private JFrame parentFrame;
-	JComboBox cboxTipo;
+	JComboBox cboxSubtipo;
 	private static JFProducts jfProductsInstance;
 
 	public RegistroProductoCubo() {
@@ -175,19 +175,19 @@ public class RegistroProductoCubo extends JPanel {
 		txCodigo.setBounds(500, 113, 410, 35);
 		add(txCodigo);
 		
-		cboxTipo = new JComboBox();
-		cboxTipo.setBounds(759, 235, 151, 35);
-		add(cboxTipo);
-		cboxTipo.addItem("2x2");
-		cboxTipo.addItem("3x3");
-		cboxTipo.addItem("4x4");
-		cboxTipo.addItem("5x5");
-		cboxTipo.addItem("6x6");
-		cboxTipo.addItem("7x7");
-		cboxTipo.addItem("Pyraminx");
-		cboxTipo.addItem("Megaminx");
-		cboxTipo.addItem("Square-1");
-		cboxTipo.addItem("Clock");
+		cboxSubtipo = new JComboBox();
+		cboxSubtipo.setBounds(759, 235, 151, 35);
+		add(cboxSubtipo);
+		cboxSubtipo.addItem("2x2");
+		cboxSubtipo.addItem("3x3");
+		cboxSubtipo.addItem("4x4");
+		cboxSubtipo.addItem("5x5");
+		cboxSubtipo.addItem("6x6");
+		cboxSubtipo.addItem("7x7");
+		cboxSubtipo.addItem("Pyraminx");
+		cboxSubtipo.addItem("Megaminx");
+		cboxSubtipo.addItem("Square-1");
+		cboxSubtipo.addItem("Clock");
 		
 		JButton btnBack = new JButton(">");
 		btnBack.addActionListener(new ActionListener() {
@@ -208,7 +208,7 @@ public class RegistroProductoCubo extends JPanel {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo, true))) {
             String nombre = txNombre.getText();
             String marca = txMarca.getText();
-            String tipo = cboxTipo.getSelectedItem().toString();
+            String tipo = cboxSubtipo.getSelectedItem().toString();
             int codigo;
             double precio, alto, ancho, largo;
 
@@ -253,7 +253,7 @@ public class RegistroProductoCubo extends JPanel {
         txAlto.setText("");
         txAncho.setText("");
         txLargo.setText("");
-        cboxTipo.setSelectedIndex(0);
+        cboxSubtipo.setSelectedIndex(0);
         lblFoto.setIcon(new ImageIcon(""));
         
     }
