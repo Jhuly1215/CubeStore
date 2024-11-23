@@ -73,7 +73,10 @@ public class panelDescripcionAccesorio extends JPanel {
         add(txTamanio);
 
         txStock = new JTextField(String.valueOf(accesorio.getStock()));
-        txStock.setBounds(500, 250, 200, 30);
+        txStock.setBounds(500, 246, 97, 30);
+        if (accesorio.getStock() < 5) {
+            txStock.setBackground(Color.red); // Cambiar el color de fondo a rojo si el stock es menor a 5
+        }
         add(txStock);
 
         // Imagen
@@ -118,7 +121,13 @@ public class panelDescripcionAccesorio extends JPanel {
             double precio = Double.parseDouble(txPrecio.getText());
             double tamano = Double.parseDouble(txTamanio.getText());
             int stock = Integer.parseInt(txStock.getText());
-
+            
+            if (stock < 5) {
+                txStock.setBackground(Color.red);
+            } else {
+                txStock.setBackground(Color.WHITE);
+            }
+            
             try (Connection conexion = ConexionDB.obtenerConexion()) {
                 ControladorCatalogo controlador = new ControladorCatalogo(conexion);
                 boolean actualizado = controlador.actualizarAccesorio(

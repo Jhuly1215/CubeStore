@@ -123,7 +123,11 @@ public class panelDescripcion extends JPanel {
 
         txStock = new JTextField(String.valueOf(producto.getStock()));
         txStock.setBounds(685, 146, 97, 30);
+        if (producto.getStock() < 5) {
+            txStock.setBackground(Color.RED); // Cambiar el color de fondo a rojo si el stock es menor a 5
+        }
         add(txStock);
+
 
         // Imagen
         lblFoto = new JLabel();
@@ -190,7 +194,13 @@ public class panelDescripcion extends JPanel {
             double ancho = Double.parseDouble(txAncho.getText());
             double largo = Double.parseDouble(txLargo.getText());
             int stock = Integer.parseInt(txStock.getText());
-
+            
+            
+            if (stock < 5) {
+                txStock.setBackground(Color.RED);
+            } else {
+                txStock.setBackground(Color.WHITE);
+            }
             // Mapear el tipo a su código correspondiente
             String tipoSeleccionado = (String) cboxTipo.getSelectedItem();
             int tipo = tipoSeleccionado.equals("Cubo") ? 1 : tipoSeleccionado.equals("Mod") ? 2 : 3;
