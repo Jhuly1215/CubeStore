@@ -115,4 +115,114 @@ public class ControladorCatalogo {
             return false;
         }
     }
+    
+    
+    public void insertarProducto(String nombre, String marca, double precio, String rutaImagen, 
+            double alto, double ancho, double largo, int stock, 
+            String tipo, String subtipo) throws SQLException {
+	String query = "INSERT INTO catalogo (nombre, precio, marca, ruta, alto, ancho, largo, stock, idtipo, idsubtipo) " +
+	  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		try (PreparedStatement stmt = conexion.prepareStatement(query)) {
+			stmt.setString(1, nombre);
+			stmt.setDouble(2, precio);
+			stmt.setString(3, marca);
+			stmt.setString(4, rutaImagen);
+			stmt.setDouble(5, alto);
+			stmt.setDouble(6, ancho);
+			stmt.setDouble(7, largo);
+			stmt.setInt(8, stock);
+			
+			// Aquí puedes obtener los IDs de tipo y subtipo desde la base de datos
+			int idTipo = obtenerIdTipo(tipo); // Implementa este método
+			int idSubtipo = obtenerIdSubtipo(subtipo); // Implementa este método
+			stmt.setInt(9, idTipo);
+			stmt.setInt(10, idSubtipo);
+			
+			stmt.executeUpdate();
+		}
+	}
+
+	private int obtenerIdTipo(String tipo) throws SQLException {
+		String query = "SELECT idtipo FROM tipo WHERE tipo = ?";
+		try (PreparedStatement stmt = conexion.prepareStatement(query)) {
+			stmt.setString(1, tipo);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+				return rs.getInt("idtipo");
+				}
+			}
+		}
+		throw new SQLException("Tipo no encontrado: " + tipo);
+	}
+
+	private int obtenerIdSubtipo(String subtipo) throws SQLException {
+		String query = "SELECT idsubtipo FROM subtipo WHERE subtipo = ?";
+		try (PreparedStatement stmt = conexion.prepareStatement(query)) {
+			stmt.setString(1, subtipo);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+				return rs.getInt("idsubtipo");
+				}
+			}
+		}
+		throw new SQLException("Subtipo no encontrado: " + subtipo);
+	}
+
+	public boolean actualizarProducto(int codigo, String nombre, String marca, double precio, double alto, double ancho, double largo, int stock, String rutaImagen, int tipo, int subtipo) {
+	    String sql = "UPDATE catalogo SET nombre = ?, marca = ?, precio = ?, alto = ?, ancho = ?, largo = ?, stock = ?, ruta = ?, idtipo = ?, idsubtipo = ? WHERE codigo = ?";
+
+	    try (PreparedStatement pstmt = conexion.prepareStatement(sql)) {
+	        pstmt.setString(1, nombre);
+	        pstmt.setString(2, marca);
+	        pstmt.setDouble(3, precio);
+	        pstmt.setDouble(4, alto);
+	        pstmt.setDouble(5, ancho);
+	        pstmt.setDouble(6, largo);
+	        pstmt.setInt(7, stock);
+	        pstmt.setString(8, rutaImagen);
+	        pstmt.setInt(9, tipo);
+	        pstmt.setInt(10, subtipo);
+	        pstmt.setInt(11, codigo);
+
+	        int filasAfectadas = pstmt.executeUpdate();
+	        return filasAfectadas > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	public boolean actualizarAccesorio(
+	        int codigo, String nombre, double precio, double tamano, int stock, String rutaImagen) throws SQLException {
+
+	    String query = "UPDATE catalogo SET nombre = ?, precio = ?, tamano = ?, stock = ?, ruta = ?, idtipo = 3 WHERE codigo = ?";
+
+	    try (PreparedStatement stmt = conexion.prepareStatement(query)) {
+	        stmt.setString(1, nombre);
+	        stmt.setDouble(2, precio);
+	        stmt.setDouble(3, tamano);
+	        stmt.setInt(4, stock);
+	        stmt.setString(5, rutaImagen);
+	        stmt.setInt(6, codigo);
+
+	        return stmt.executeUpdate() > 0;
+	    }
+	}
+	public boolean insertarProductoAccesorio(String nombre, double precio, String marca, double tamanno, int stock, String ruta) throws SQLException {
+	    String query = "INSERT INTO catalogo (nombre, precio, marca, tamano, stock, ruta, idtipo, idsubtipo) VALUES (?, ?, ?, ?, ?, ?, 3, NULL)";
+
+	    try (PreparedStatement stmt = conexion.prepareStatement(query)) {
+	        stmt.setString(1, nombre);
+	        stmt.setDouble(2, precio);
+	        stmt.setString(3, marca);
+	        stmt.setDouble(4, tamanno); // Usamos 'alto' para guardar el tamaño.
+	        stmt.setInt(5, stock);
+	        stmt.setString(6, ruta);
+	        return stmt.executeUpdate() > 0;
+	    }
+	}
+
+
+
+
+
 }
