@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class UdescripcionCubo extends JPanel {
     private JTextField txNombre;
@@ -19,13 +22,16 @@ public class UdescripcionCubo extends JPanel {
     private JLabel lblAñadirCubo;
     private JComboBox<Integer> cboxCantidad;
     private JButton btnCarrito;
-
+    
+    private int usuarioId;
     /**
      * Constructor que recibe un producto del tipo Cubo desde el modelo Catalogo.
      *
      * @param producto Instancia del modelo Catalogo que contiene los datos del cubo.
      */
-    public UdescripcionCubo(Catalogo producto) {
+    public UdescripcionCubo(Catalogo producto, int usuarioId) {
+    	
+    	this.usuarioId=usuarioId;
         setBackground(Color.WHITE);
         setLayout(null);
         setBounds(0, 0, 1000, 540);
@@ -140,7 +146,7 @@ public class UdescripcionCubo extends JPanel {
         JButton btnBack = new JButton(">");
         btnBack.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                UProductos p = new UProductos();
+                UProductos p = new UProductos(usuarioId);
                 removeAll();
                 p.setVisible(true);
                 revalidate();
@@ -164,10 +170,29 @@ public class UdescripcionCubo extends JPanel {
         lblCantidad.setHorizontalAlignment(SwingConstants.LEFT);
         lblCantidad.setBounds(465, 484, 91, 18);
         add(lblCantidad);
-
-        // Botón "Añadir al carrito" (sin funcionalidad por ahora)
+        
         btnCarrito = new JButton("Añadir al carrito");
         btnCarrito.setBounds(730, 470, 180, 50);
         add(btnCarrito);
+        // Botón "Añadir al carrito" (sin funcionalidad por ahora)
+        btnCarrito.addActionListener(e -> {
+            int cantidad = (int) cboxCantidad.getSelectedItem();
+            if (cantidad > 0) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("Carrito.txt", true))) {
+                    writer.write("Código: " + producto.getCodigo() + "\n");
+                    writer.write("Nombre: " + producto.getNombre() + "\n");
+                    writer.write("Precio: " + producto.getPrecio() + "\n");
+                    writer.write("Cantidad: " + cantidad + "\n");
+                    writer.write("Costo: " + (producto.getPrecio() * cantidad) + "\n");
+                    writer.write("------------------------------\n");
+                    JOptionPane.showMessageDialog(this, "Producto añadido al carrito.");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleccione una cantidad mayor a 0.");
+            }
+        });
+
     }
 }

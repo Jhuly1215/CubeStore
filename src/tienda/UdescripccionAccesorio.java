@@ -4,6 +4,9 @@ import Modelos.Catalogo;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class UdescripccionAccesorio extends JPanel {
     private JTextField txNombre;
@@ -14,8 +17,9 @@ public class UdescripccionAccesorio extends JPanel {
     private JLabel lblFoto;
     private JButton btnCarrito;
     private JComboBox<Integer> cboxCantidad;
-
-    public UdescripccionAccesorio(Catalogo accesorio) {
+    private int usuarioId;
+    public UdescripccionAccesorio(Catalogo accesorio, int usuarioId) {
+    	this.usuarioId=usuarioId;
         setLayout(null);
         setBounds(0, 0, 1000, 580);
         Font f = new Font("Bahnschrift", Font.PLAIN, 20);
@@ -89,7 +93,7 @@ public class UdescripccionAccesorio extends JPanel {
 
         JButton btnBack = new JButton(">");
         btnBack.addActionListener(e -> {
-            UProductos p = new UProductos();
+            UProductos p = new UProductos(usuarioId);
             removeAll();
             p.setVisible(true);
             revalidate();
@@ -97,10 +101,45 @@ public class UdescripccionAccesorio extends JPanel {
         });
         btnBack.setBounds(915, 40, 50, 50);
         add(btnBack);
+        
+        
+     // ComboBox para cantidad
+        cboxCantidad = new JComboBox<>();
+        cboxCantidad.setBounds(582, 477, 50, 36);
+        add(cboxCantidad);
 
-        // Botón "Añadir al carrito"
+        for (int i = 1; i <= 5; i++) {
+            cboxCantidad.addItem(i);
+        }
+
+        JLabel lblCantidad = new JLabel("Cantidad: ");
+        lblCantidad.setFont(new Font("Bahnschrift", Font.PLAIN, 17));
+        lblCantidad.setHorizontalAlignment(SwingConstants.LEFT);
+        lblCantidad.setBounds(465, 484, 91, 18);
+        add(lblCantidad);
+        
         btnCarrito = new JButton("Añadir al carrito");
         btnCarrito.setBounds(730, 470, 180, 50);
         add(btnCarrito);
+        // Botón "Añadir al carrito"
+        btnCarrito.addActionListener(e -> {
+            int cantidad = (int) cboxCantidad.getSelectedItem();
+            if (cantidad > 0) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("Carrito.txt", true))) {
+                    writer.write("Código: " + accesorio.getCodigo() + "\n");
+                    writer.write("Nombre: " + accesorio.getNombre() + "\n");
+                    writer.write("Precio: " + accesorio.getPrecio() + "\n");
+                    writer.write("Cantidad: " + cantidad + "\n");
+                    writer.write("Costo: " + (accesorio.getPrecio() * cantidad) + "\n");
+                    writer.write("------------------------------\n");
+                    JOptionPane.showMessageDialog(this, "Producto añadido al carrito.");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleccione una cantidad mayor a 0.");
+            }
+        });
+
     }
 }

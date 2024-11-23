@@ -6,6 +6,7 @@ public class Catalogo {
     private double precio = 0.0; // producto
     private String marca; // producto
     private String ruta; // imagen del producto
+    private int stock;
     private int idTipo; // tipo de producto
     private int idSubtipo; //(2x2,3x3... solo para cubos y mods)
     private double alto = 0.0; //(solo para cubos y mods)
@@ -14,17 +15,18 @@ public class Catalogo {
     private double tamano = 0.0; //(solo para accesorios)
 
     public Catalogo() {}
-    public Catalogo(int codigo, String nombre, double precio, String marca, String ruta, int idTipo) {
+    public Catalogo(int codigo, String nombre, double precio, String marca, String ruta, int idTipo, int stock) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.precio = precio;
         this.marca = marca;
         this.ruta = ruta;
         this.idTipo = idTipo;
+        this.stock = stock;
     }
     
     //Constuctor de cubo y mod
-    public Catalogo(int codigo, String nombre, double precio, String marca, String ruta, int idTipo, int idSubtipo,
+    public Catalogo(int codigo, String nombre, double precio, String marca, String ruta, int idTipo, int stock, int idSubtipo,
     		double alto, double ancho, double largo) {
         this.codigo = codigo;
         this.nombre = nombre;
@@ -32,6 +34,7 @@ public class Catalogo {
         this.marca = marca;
         this.ruta = ruta;
         this.idTipo = idTipo; 
+        this.stock=stock;
         this.idSubtipo=idSubtipo;
         this.alto = alto;
         this.ancho = ancho;
@@ -39,13 +42,14 @@ public class Catalogo {
     }
     
     //Constuctor de accesorio o lubricante 
-    public Catalogo(int codigo, String nombre, double precio, String marca, String ruta, int idTipo, double tamano) {
+    public Catalogo(int codigo, String nombre, double precio, String marca, String ruta, int idTipo, int stock,double tamano) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.precio = precio;
         this.marca = marca;
         this.ruta = ruta;
         this.idTipo = idTipo;
+        this.stock=stock;
         this.tamano=tamano;
     }
 
@@ -68,7 +72,8 @@ public class Catalogo {
     public int getIdTipo() { return idTipo; }
     public void setIdTipo(int idTipo) { this.idTipo = idTipo; }
 
-    
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
     
     public int getIdSubtipo() { return idSubtipo; }
     public void setIdSubtipo(int idSubtipo) { this.idSubtipo = idSubtipo; }
@@ -109,6 +114,7 @@ public class Catalogo {
                 ", marca='" + marca + '\'' +
                 ", ruta='" + ruta + '\'' +
                 ", idTipo=" + idTipo +
+                ", stock=" + stock +
                 ", idSubtipo=" + idSubtipo +
                 ", alto=" + alto +
                 ", ancho=" + ancho +

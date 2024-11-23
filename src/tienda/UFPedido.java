@@ -8,14 +8,20 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.Statement;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -29,6 +35,12 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import Controladores.ConexionDB;
+import Controladores.ControladorPedido;
+import Modelos.DetallePedido;
+import Modelos.Pedido;
+
 
 public class UFPedido extends JFrame {
 	private String archivo="Carrito.txt";
@@ -46,8 +58,11 @@ public class UFPedido extends JFrame {
     JTable tablePedido;
     JLabel lblTotal;
     private double total = 0;
-	public UFPedido() {
-		
+    private int usuarioId;
+
+	public UFPedido(int usuarioId) {
+		this.usuarioId=usuarioId;
+
 		getContentPane().setBackground(Color.BLACK);
     	getContentPane().setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -60,7 +75,7 @@ public class UFPedido extends JFrame {
         btnLogo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-                UNosotros n = new UNosotros();
+                UNosotros n = new UNosotros(usuarioId);
                 n.setVisible(true);
         	}
         });
@@ -73,7 +88,7 @@ public class UFPedido extends JFrame {
         btnUsuario.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-                UNosotros n = new UNosotros();
+                UNosotros n = new UNosotros(usuarioId);
                 n.setVisible(true);
         	}
         });
@@ -89,7 +104,7 @@ public class UFPedido extends JFrame {
         btnProductos.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-                UProductos n = new UProductos();
+                UProductos n = new UProductos(usuarioId);
                 n.setVisible(true);
         	}
         });
@@ -114,7 +129,7 @@ public class UFPedido extends JFrame {
         btnNosotros.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-                UNosotros n = new UNosotros();
+                UNosotros n = new UNosotros(usuarioId);
                 n.setVisible(true);
         	}
         });
@@ -197,7 +212,7 @@ public class UFPedido extends JFrame {
         btnBack.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-        		UProductos p=new UProductos();
+        		UProductos p=new UProductos(usuarioId);
         		p.setVisible(true);
         	}
         });
@@ -211,6 +226,11 @@ public class UFPedido extends JFrame {
         panelInferior.add(lblTotal);
         tablePedido.setDefaultEditor(Object.class, null);
         
+        JButton btnRealizarPedido = new JButton("Realizar Pedido");
+        btnRealizarPedido.addActionListener(e -> realizarPedido());
+        btnRealizarPedido.setBounds(220, 464, 150, 38);
+        panelInferior.add(btnRealizarPedido);
+
         
         cargarDatosDesdeArchivo(archivo);
         
@@ -293,11 +313,76 @@ public class UFPedido extends JFrame {
     private String extraerValor(String linea, String etiqueta) {
         return linea.substring(etiqueta.length()).trim();
     }
+    private void realizarPedido() {
+	    // Verificar que el carrito no esté vacío
+	    if (tablePedido.getRowCount() == 0) {
+	        JOptionPane.showMessageDialog(this, "El carrito está vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+	
+	    try (Connection conexion = ConexionDB.obtenerConexion()) {
+	        // Crear instancia del controlador
+	        ControladorPedido controladorPedido = new ControladorPedido(conexion);
+	
+	        // Crear el objeto Pedido con la fecha actual, el total y el ID del usuario
+	        Pedido nuevoPedido = new Pedido(0, new java.util.Date(), total, usuarioId);
+	
+	        // Insertar el pedido en la base de datos y obtener el ID generado
+	        int idPedidoGenerado = controladorPedido.crearPedido(nuevoPedido);
+	
+	        // Obtener el modelo de la tabla
+	        DefaultTableModel modelo = (DefaultTableModel) tablePedido.getModel();
+	
+	        // Insertar los detalles del pedido
+	        for (int i = 0; i < modelo.getRowCount(); i++) {
+	            int codigoProducto = (int) modelo.getValueAt(i, 0); // Código del producto
+	            int cantidad = (int) modelo.getValueAt(i, 3);       // Cantidad seleccionada
+	
+	            // Validar datos
+	            if (codigoProducto <= 0 || cantidad <= 0) {
+	                JOptionPane.showMessageDialog(this, "Datos inválidos en el carrito. Revisa la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
+	                return;
+	            }
+	
+	            // Crear el objeto DetallePedido con el ID del pedido generado
+	            DetallePedido detalle = new DetallePedido(0, idPedidoGenerado, codigoProducto, cantidad);
+	
+	            // Insertar detalle en la base de datos
+	            controladorPedido.agregarDetallePedido(detalle);
+	        }
+	
+	        // Limpiar el carrito después de realizar el pedido
+	        limpiarCarrito();
+	        cargarDatosDesdeArchivo(archivo);
+	
+	        // Mostrar mensaje de éxito
+	        JOptionPane.showMessageDialog(this, "Pedido realizado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        e.printStackTrace();
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        e.printStackTrace();
+	    }
+	}
+
+
+
+
+    private void limpiarCarrito() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
+            writer.write(""); // Limpia el archivo del carrito
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					UFPedido frame = new UFPedido();
+					UFPedido frame = new UFPedido(1234);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

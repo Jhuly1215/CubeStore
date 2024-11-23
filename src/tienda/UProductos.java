@@ -20,11 +20,14 @@ public class UProductos extends JFrame {
     private JPanel panelTarjetasContenido;
     private JPanel panelLateral;
     private UdescripcionCubo p;
-    private UdescripcionMod pm;
     private UdescripccionAccesorio pa;
     private JLabel lblCubos;
-
-    public UProductos() {
+    
+    private int usuarioId;    
+    
+    public UProductos(int usuarioId) {
+    	
+    	this.usuarioId = usuarioId;
         getContentPane().setBackground(Color.BLACK);
         getContentPane().setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -144,7 +147,7 @@ public class UProductos extends JFrame {
         btnPedido.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                UFPedido p = new UFPedido();
+                UFPedido p = new UFPedido(usuarioId);
                 p.setVisible(true);
             }
         });
@@ -163,7 +166,7 @@ public class UProductos extends JFrame {
                 btnprod.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        pa = new UdescripccionAccesorio(producto);
+                        pa = new UdescripccionAccesorio(producto, usuarioId);
                         pa.setSize(1000, 540);
                         pa.setLocation(0, 120);
                         pa.setVisible(true);
@@ -179,7 +182,7 @@ public class UProductos extends JFrame {
                 btnprod.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        p = new UdescripcionCubo(producto);
+                        p = new UdescripcionCubo(producto, usuarioId);
                         p.setSize(1000, 540);
                         p.setLocation(0, 120);
                         p.setVisible(true);
@@ -238,7 +241,7 @@ public class UProductos extends JFrame {
         btnNosotros.setBounds(350, 50, 100, 30);
         btnNosotros.addActionListener(e -> {
         	dispose();
-            UNosotros n = new UNosotros();
+            UNosotros n = new UNosotros(usuarioId);
             n.setVisible(true);
         });
         getContentPane().add(btnNosotros);
@@ -254,7 +257,7 @@ public class UProductos extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    UProductos frame = new UProductos();
+                    UProductos frame = new UProductos(1234);
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();

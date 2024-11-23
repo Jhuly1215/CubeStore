@@ -21,7 +21,8 @@ CREATE TABLE catalogo (
 CREATE TABLE detalle_pedido (
     cdetallepedido serial PRIMARY KEY, -- Llave primaria
     idpedido int, -- Se permite NULL
-    codigo int -- Se permite NULL
+    codigo int, -- Se permite NULL
+    cantidad int,
 );
 
 -- Table: pedido

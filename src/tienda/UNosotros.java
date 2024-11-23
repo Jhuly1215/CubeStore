@@ -18,12 +18,12 @@ import javax.swing.border.EmptyBorder;
 public class UNosotros extends JFrame {
 
 	JPanel panelInferior;
-	
+	private int usuarioId;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					UNosotros frame = new UNosotros();
+					UNosotros frame = new UNosotros(1234);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -32,7 +32,8 @@ public class UNosotros extends JFrame {
 		});
 	}
 
-	public UNosotros() {
+	public UNosotros(int usuarioId) {
+		this.usuarioId=usuarioId;
 		getContentPane().setBackground(Color.BLACK);
         getContentPane().setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,7 +95,7 @@ public class UNosotros extends JFrame {
         btnLogo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-             UNosotros n = new UNosotros();
+             UNosotros n = new UNosotros(usuarioId);
              n.setVisible(true);
         	}
         });
@@ -107,7 +108,7 @@ public class UNosotros extends JFrame {
         btnUsuario.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-                UNosotros n = new UNosotros();
+                UNosotros n = new UNosotros(usuarioId);
                 n.setVisible(true);
         	}
         });
@@ -123,7 +124,7 @@ public class UNosotros extends JFrame {
         btnProductos.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-             UProductos n = new UProductos();
+             UProductos n = new UProductos(usuarioId);
              n.setVisible(true);
         	}
         });
@@ -137,7 +138,7 @@ public class UNosotros extends JFrame {
         btnInicio.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		   dispose();
-                UInicio n = new UInicio();
+                UInicio n = new UInicio(usuarioId);
                 n.setVisible(true);
         	}
         });
@@ -148,7 +149,7 @@ public class UNosotros extends JFrame {
         btnNosotros.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		dispose();
-             UNosotros n = new UNosotros();
+             UNosotros n = new UNosotros(usuarioId);
              n.setVisible(true);
         	}
         });

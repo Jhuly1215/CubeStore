@@ -16,21 +16,15 @@ import javax.swing.SwingConstants;
 public class UInicio extends JFrame {
 
 	JPanel panelInferior;
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UInicio frame = new UInicio();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private int usuarioId;
 
-	public UInicio() {
-		getContentPane().setBackground(Color.BLACK);
+    public UInicio(int usuarioId) {
+        this.usuarioId = usuarioId; // Guarda el ID del usuario
+        initUI();
+    }
+    
+    private void initUI() {
+    	getContentPane().setBackground(Color.BLACK);
         getContentPane().setLayout(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 700);
@@ -59,7 +53,7 @@ public class UInicio extends JFrame {
        btnLogo.addActionListener(new ActionListener() {
        	public void actionPerformed(ActionEvent e) {
        		dispose();
-            UNosotros n = new UNosotros();
+            UNosotros n = new UNosotros(usuarioId);
             n.setVisible(true);
        	}
        });
@@ -72,7 +66,7 @@ public class UInicio extends JFrame {
        btnUsuario.addActionListener(new ActionListener() {
        	public void actionPerformed(ActionEvent e) {
        		dispose();
-            UNosotros n = new UNosotros();
+            UNosotros n = new UNosotros(usuarioId);
             n.setVisible(true);
        	}
        });
@@ -88,7 +82,7 @@ public class UInicio extends JFrame {
        btnProductos.addActionListener(new ActionListener() {
        	public void actionPerformed(ActionEvent e) {
        		dispose();
-            UProductos n = new UProductos();
+            UProductos n = new UProductos(usuarioId);
             n.setVisible(true);
        	}
        });
@@ -102,7 +96,7 @@ public class UInicio extends JFrame {
        btnInicio.addActionListener(new ActionListener() {
        	public void actionPerformed(ActionEvent e) {
        		   dispose();
-               UInicio n = new UInicio();
+               UInicio n = new UInicio(usuarioId);
                n.setVisible(true);
        	}
        });
@@ -113,7 +107,7 @@ public class UInicio extends JFrame {
        btnNosotros.addActionListener(new ActionListener() {
        	public void actionPerformed(ActionEvent e) {
        		dispose();
-            UNosotros n = new UNosotros();
+            UNosotros n = new UNosotros(usuarioId);
             n.setVisible(true);
        	}
        });
@@ -122,6 +116,18 @@ public class UInicio extends JFrame {
        btnNosotros.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
        btnNosotros.setBounds(350, 50, 100, 30);
        getContentPane().add(btnNosotros);;
+    }
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					UInicio frame = new UInicio(1234);
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 }

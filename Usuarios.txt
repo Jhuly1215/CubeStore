@@ -1,3 +1,0 @@
-Usuario: usuario1
-Contraseña: contra1
-------------------------------
