@@ -52,7 +52,7 @@ public class UFPedido extends JFrame {
     JPanel panelTarjetasContenido;
     JPanel panelInferior;
     UdescripcionCubo p;
-    panelDescripcionMod pm;
+
     panelDescripcionAccesorio pa;
     JLabel lblCubos;
     JTable tablePedido;

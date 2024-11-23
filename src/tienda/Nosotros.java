@@ -155,5 +155,19 @@ public class Nosotros extends JFrame {
         btnNosotros.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
         btnNosotros.setBounds(350, 50, 100, 30);
         getContentPane().add(btnNosotros);
+        
+        JButton btnPedidos = new JButton("Pedidos");
+        btnPedidos.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		dispose();
+                UFTodosPedidos n = new UFTodosPedidos();
+                n.setVisible(true);
+        	}
+        });
+        btnPedidos.setIcon(new ImageIcon(JFProducts.class.getResource("/imagenes/verde(1000x700).jpg")));
+        btnPedidos.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnPedidos.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+        btnPedidos.setBounds(450, 50, 100, 30);
+        getContentPane().add( btnPedidos);
 	}
 }
