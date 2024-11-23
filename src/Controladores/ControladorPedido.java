@@ -159,4 +159,27 @@ public class ControladorPedido {
             stmt.executeUpdate();
         }
     }
+    
+    public boolean verificarStock(int codigoProducto, int cantidad) throws SQLException {
+        String sql = "SELECT stock FROM catalogo WHERE codigo = ?";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setInt(1, codigoProducto);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int stockDisponible = rs.getInt("stock");
+                    return stockDisponible >= cantidad; // Verifica si hay suficiente stock
+                }
+            }
+        }
+        throw new SQLException("Producto no encontrado: " + codigoProducto);
+    }
+    public void actualizarStock(int codigoProducto, int cantidad) throws SQLException {
+        String sql = "UPDATE catalogo SET stock = stock - ? WHERE codigo = ?";
+        try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
+            stmt.setInt(1, cantidad);
+            stmt.setInt(2, codigoProducto);
+            stmt.executeUpdate();
+        }
+    }
+
 }

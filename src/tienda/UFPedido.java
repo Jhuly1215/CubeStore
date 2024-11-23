@@ -314,58 +314,69 @@ public class UFPedido extends JFrame {
         return linea.substring(etiqueta.length()).trim();
     }
     private void realizarPedido() {
-	    // Verificar que el carrito no esté vacío
-	    if (tablePedido.getRowCount() == 0) {
-	        JOptionPane.showMessageDialog(this, "El carrito está vacío.", "Error", JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
-	
-	    try (Connection conexion = ConexionDB.obtenerConexion()) {
-	        // Crear instancia del controlador
-	        ControladorPedido controladorPedido = new ControladorPedido(conexion);
-	
-	        // Crear el objeto Pedido con la fecha actual, el total y el ID del usuario
-	        Pedido nuevoPedido = new Pedido(0, new java.util.Date(), total, usuarioId);
-	
-	        // Insertar el pedido en la base de datos y obtener el ID generado
-	        int idPedidoGenerado = controladorPedido.crearPedido(nuevoPedido);
-	
-	        // Obtener el modelo de la tabla
-	        DefaultTableModel modelo = (DefaultTableModel) tablePedido.getModel();
-	
-	        // Insertar los detalles del pedido
-	        for (int i = 0; i < modelo.getRowCount(); i++) {
-	            int codigoProducto = (int) modelo.getValueAt(i, 0); // Código del producto
-	            int cantidad = (int) modelo.getValueAt(i, 3);       // Cantidad seleccionada
-	
-	            // Validar datos
-	            if (codigoProducto <= 0 || cantidad <= 0) {
-	                JOptionPane.showMessageDialog(this, "Datos inválidos en el carrito. Revisa la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
-	                return;
-	            }
-	
-	            // Crear el objeto DetallePedido con el ID del pedido generado
-	            DetallePedido detalle = new DetallePedido(0, idPedidoGenerado, codigoProducto, cantidad);
-	
-	            // Insertar detalle en la base de datos
-	            controladorPedido.agregarDetallePedido(detalle);
-	        }
-	
-	        // Limpiar el carrito después de realizar el pedido
-	        limpiarCarrito();
-	        cargarDatosDesdeArchivo(archivo);
-	
-	        // Mostrar mensaje de éxito
-	        JOptionPane.showMessageDialog(this, "Pedido realizado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-	
-	    } catch (SQLException e) {
-	        JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	        e.printStackTrace();
-	    } catch (Exception e) {
-	        JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	        e.printStackTrace();
-	    }
-	}
+    // Verificar que el carrito no esté vacío
+    if (tablePedido.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(this, "El carrito está vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try (Connection conexion = ConexionDB.obtenerConexion()) {
+        // Crear instancia del controlador
+        ControladorPedido controladorPedido = new ControladorPedido(conexion);
+
+        // Crear el objeto Pedido con la fecha actual, el total y el ID del usuario
+        Pedido nuevoPedido = new Pedido(0, new java.util.Date(), total, usuarioId);
+
+        // Insertar el pedido en la base de datos y obtener el ID generado
+        int idPedidoGenerado = controladorPedido.crearPedido(nuevoPedido);
+
+        // Obtener el modelo de la tabla
+        DefaultTableModel modelo = (DefaultTableModel) tablePedido.getModel();
+
+        // Verificar y actualizar stock antes de insertar los detalles del pedido
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            int codigoProducto = (int) modelo.getValueAt(i, 0); // Código del producto
+            int cantidad = (int) modelo.getValueAt(i, 3);       // Cantidad seleccionada
+
+            // Verificar stock disponible
+            if (!controladorPedido.verificarStock(codigoProducto, cantidad)) {
+                JOptionPane.showMessageDialog(this, 
+                    "Stock insuficiente para el producto con código: " + codigoProducto, 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return; // Abortamos el proceso si no hay suficiente stock
+            }
+        }
+
+        // Si todo el stock está disponible, realiza el pedido y actualiza el stock
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            int codigoProducto = (int) modelo.getValueAt(i, 0);
+            int cantidad = (int) modelo.getValueAt(i, 3);
+
+            // Crear el objeto DetallePedido con el ID del pedido generado
+            DetallePedido detalle = new DetallePedido(0, idPedidoGenerado, codigoProducto, cantidad);
+
+            // Insertar detalle en la base de datos
+            controladorPedido.agregarDetallePedido(detalle);
+
+            // Actualizar stock en la base de datos
+            controladorPedido.actualizarStock(codigoProducto, cantidad);
+        }
+
+        // Limpiar el carrito después de realizar el pedido
+        limpiarCarrito();
+        cargarDatosDesdeArchivo(archivo);
+
+        // Mostrar mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Pedido realizado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+}
 
 
 
